@@ -1,0 +1,33 @@
+https://github.com/KarimElghamry/GraphAV
+https://styled-components.com/docs/basics#styling-any-component
+
+add nodes with drag and drop
+click on nodes to move them
+right click on nodes to add edge
+select bar for choosing algorithm
+select starting node when relevant
+animations for algorithms with visited nodes and updates
+end by keeping the final result displayed
+
+implement BFS and DFS
+make UI better:
+-right click to add edge or delete vertex
+-move vertices
+-select speed of execution
+-dijkstra: make UI to select source
+-weights of edges
+-handle error cases
+
+when we delete a vertex: ids are removed and can't use the arrays in algos
+
+for context with funtional components: https://medium.com/@danfyfe/using-react-context-with-functional-components-153cbd9ba214
+
+later:
+-react cosmos
+
+
+-directed edges
+-about pop-up
+-delete vertices
+-error dialog when disconnected graph
+-clean up code js + css
