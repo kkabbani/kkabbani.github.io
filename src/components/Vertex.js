@@ -1,16 +1,15 @@
 import React, { useState, useContext } from 'react'
 import MoveModeContext from '../moveModeContext'
 
-const Vertex = ({ vertex, onRightClick, onAddEdge, cursorPosition }) => {
+const Vertex = ({ vertex, onRightClick, onAddEdge, cursorPosition, playArea }) => {
     const [scaleBy, setScaleBy] = useState(1)
 
     const moveMode = useContext(MoveModeContext)
 
     if (vertex.dragging) {
         //prevent from moving outside playground
-        // max found by trial and error
-        vertex.top = Math.max(cursorPosition.top, 100)
-        vertex.left = Math.max(cursorPosition.left, 250)
+        vertex.top = Math.max(cursorPosition.top, playArea.top)
+        vertex.left = Math.max(cursorPosition.left, playArea.left)
     }
     let t = (vertex.top - 25) + 'px'
     let l = (vertex.left - 25) + 'px'

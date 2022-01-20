@@ -253,10 +253,6 @@
   margin: 10px 0;
 }
 
-/* .playground {
-  background-color: black;
-} */
-
 .content {
   height: 100%;
   width: 100%;
@@ -391,6 +387,8 @@
   z-index: 200;
   margin: 5% auto;
   width: 50%;
+  max-height: 88%;
+  overflow: scroll;
   background-color: var(--primary-color);
   opacity: 0.9;
   border: 2px solid black;
@@ -404,6 +402,8 @@
 
 .pop-up-inner {
   width: 100%;
+  max-height: 100%;
+  
   background-color: #fff;
   border-radius: 0 0 20px 20px;
   padding: 20px;

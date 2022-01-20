@@ -77,8 +77,8 @@ class EdgeObject {
     this.from = from
     this.to = to
     this.weight = weight
+    this.toDraw = toDraw //whether we draw the edge in this direction in directed graph
     this.visited = visited
-    this.toDraw = toDraw
   }
 }
 
@@ -121,7 +121,7 @@ function App() {
   const [addEdgeWeight, setAddEdgeWeight] = useState(1)
   const [cursorTop, setCursorTop] = useState(0)
   const [cursorLeft, setCursorLeft] = useState('0')
-  const [directedEdges, setDirectedEdges] = useState(true)
+  const [directedEdges, setDirectedEdges] = useState(false)
   const [graph, setGraph] = useState([])
   const [speed, setSpeed] = useState(0.5)
   const [delayTime, setDelayTime] = useState(1500) //to change
@@ -129,12 +129,17 @@ function App() {
   const [moveMode, setMoveMode] = useState(false)
   const [selectedAlgo, setSelectedAlgo] = useState(0)
   const [vertexStart, setVertexStart] = useState(0)
-  const [displayAboutPopUp, setDisplayAboutPopUp] = useState(false)
+  const [displayAboutPopUp, setDisplayAboutPopUp] = useState(true)
   const [displayAlertPopUp, setDisplayAlertPopUp] = useState(false)
+  const [enteredPlayground, setEnteredPlayground] = useState(false)
 
   const algoOptions = ['BFS', 'DFS', "Prim's", 'Kruskal', 'Dijkstra']
   const algoWithWeights = [2, 3, 4]
   const algoWithStartVertex = [0, 1, 4]
+
+  //const indicating max values for top and left to stay in playground area
+  //values found by trial and error
+  const playArea = { top: 100, left: 250 }
 
   const vertexColors = [
     "red",
@@ -148,19 +153,18 @@ function App() {
     "StateBlue"
   ]
 
-  useEffect(() => { //update graph
+  useEffect(() => { //update computed graph based on drawn graph
     let tmpGraph = []
-    //const nbVertices = Math.max(vertices.length, graph.length)
     const nbVertices = vertices.length
     for (var i = 0; i < nbVertices; ++i) {
       let row = []
       for (var j = 0; j < nbVertices; ++j) {
         let edge = edges[vertices[i].id + '-' + vertices[j].id]
-        if (!directedEdges && edge === undefined) {
+        if ((!directedEdges && edge === undefined)) {
           edge = edges[vertices[j].id + '-' + vertices[i].id]
         }
 
-        if (i === j || edge === undefined) {
+        if (i === j || edge === undefined || (directedEdges && !edge.toDraw)) {
           row.push(0)
         } else {
           row.push(edge.weight)
@@ -171,23 +175,13 @@ function App() {
     setGraph(tmpGraph)
   }, [vertices, edges, directedEdges])
 
-  // useEffect(() => {
-  //   if (directedEdges) {
-  //     const newEdges = edges.map(edge => new EdgeObject(edge.to + "-" + edge.from, edge.to, edge.from, edge.weight))
-  //     setEdges({ ...edges, ...newEdges })
-  //     // if (!edges.hasOwnProperty(newEdge.id)) {
-  //     //   let newElement = {}
-  //     //   newElement[newEdge.id] = newEdge
-  //     //   if (!directedEdges) { //add reverse edge if undirected
-  //     //     const newEdgeRev = new EdgeObject(to + "-" + from, to, from, weight, false)
-  //     //     newElement[newEdgeRev.id] = newEdgeRev
-  //     //   }
-  //     //   setEdges({ ...edges, ...newElement })
-  //     // }
-  //   }else{
-
-  //   }
-  // }, [directedEdges])
+  useEffect(() => { //update value of whether cursor is in playground area
+    if (cursorTop >= playArea.top && cursorLeft >= playArea.left) {
+      setEnteredPlayground(true)
+    } else {
+      setEnteredPlayground(false)
+    }
+  }, [cursorTop, cursorLeft])
 
   const sleep = () => {
     return new Promise(resolve => setTimeout(resolve, delayTime));
@@ -268,6 +262,7 @@ function App() {
   }
 
   const computeBFS = async (source) => {
+    console.log(graph)
     let n = graph.length
     let states = new Array(n).fill(0) //0: not seen, 1: queued, 2: visited
     states[source] = 1
@@ -485,11 +480,13 @@ function App() {
   const stopDragVertex = (e) => {
     if (isDraggingVertex) {
       setIsDraggingVertex(false)
-      let nextId = 0
-      if (vertices.length > 0) {
-        nextId = vertices[vertices.length - 1].id + 1
+      if (enteredPlayground) {
+        let nextId = 0
+        if (vertices.length > 0) {
+          nextId = vertices[vertices.length - 1].id + 1
+        }
+        setVertices([...vertices, { id: nextId, label: nextId, top: e.pageY, left: e.pageX }])
       }
-      setVertices([...vertices, { id: nextId, label: nextId, top: e.pageY, left: e.pageX }])
     }
   }
 
@@ -557,7 +554,10 @@ function App() {
   return (
     <MoveModeContext.Provider value={moveMode}>
       <div className="Container" style={{ cursor: moveMode ? 'pointer' : 'auto', width: window.innerWidth, height: window.innerHeight }} onMouseMove={moveCursor} onMouseDown={cancelMouseAction} onMouseUp={() => {
-        vertices.forEach(vertex => vertex.dragging = false)
+        vertices.forEach(vertex => {
+          vertex.dragging = false
+        })
+        //setVertices(vertices.filter(vertex => vertex.top >= 100 && vertex.left >= 250))
       }}>
         <div className="navbar-top grid-nav2">
           <h1>GraphVisualize</h1>
@@ -609,11 +609,9 @@ function App() {
               <MovingEdge isMoving={isMovingEdge} movingFrom={movingEdgeFrom} movingTo='cursor' directed={directedEdges}></MovingEdge>
             </Xwrapper>
 
-
-            <Vertices vertices={vertices} onRightClick={onRightClickVertex} onAddEdge={addEdge} cursorPosition={{ top: cursorTop, left: cursorLeft }}></Vertices>
+            <Vertices vertices={vertices} onRightClick={onRightClickVertex} onAddEdge={addEdge} cursorPosition={{ top: cursorTop, left: cursorLeft }} playArea={playArea}></Vertices>
             <Edges edges={edges} directed={directedEdges} showWeights={arrayIncludes(algoWithWeights, selectedAlgo)}></Edges>
             <MenuVertex vertex={showMenuToVertex} onDrawingEdge={drawingEdge} onDeleteVertex={deleteVertex}></MenuVertex>
-
           </div>
         </div>
         <AboutPopUp display={displayAboutPopUp} onClose={closePopUps}></AboutPopUp>

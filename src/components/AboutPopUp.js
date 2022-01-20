@@ -28,17 +28,17 @@ const AboutPopUp = ({ display, onClose }) => {
                     Once you are satisfied with the graph, you can select the algorithm you want to try as
                     well as the starting point when possible.
                     Press on "GO" to run.
-                    <br />
-                    <br />
-                    You will see edges and/or vertices highlighted depending on the algorithm.
-                    The colors depend on the algorithm but usually the following ones are used:
-                    an edge is <span className='span-red'>red</span> when it is chosen/visited and for vertices the colors usually mean the following:
-                    <ul>
-                        <li><span className='span-black'>black</span> means not visited yet</li>
-                        <li><span className='span-yellow'>yellow</span> means queued or being visited</li>
-                        <li><span className='span-red'>red</span> means visited</li>
-                    </ul>
-                    <br />
+                </p>
+                You will see edges and/or vertices highlighted depending on the algorithm.
+                The colors depend on the algorithm but usually the following ones are used:
+                an edge is <span className='span-red'>red</span> when it is chosen/visited and for vertices the colors usually mean the following:
+                <br />
+                <ul>
+                    <li><span className='span-black'>black</span> means not visited yet</li>
+                    <li><span className='span-yellow'>yellow</span> means queued or being visited</li>
+                    <li><span className='span-red'>red</span> means visited</li>
+                </ul>
+                <p>
                     To remove all the colors press on "Reset Graph" and to delete the graph press on "Clear Graph".
                 </p>
             </section>
